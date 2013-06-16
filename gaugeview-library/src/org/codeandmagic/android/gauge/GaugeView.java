@@ -7,6 +7,7 @@
  *******************************************************************************/
 package org.codeandmagic.android.gauge;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
@@ -67,13 +68,17 @@ public class GaugeView extends View {
 	public static final int SCALE_DIVISIONS = 10;
 	public static final int SCALE_SUBDIVISIONS = 5;
 
-	public static final int[] OUTER_SHADOW_COLORS = { Color.argb(40, 255, 254, 187), Color.argb(20, 255, 247, 219),
+	public static final int[] OUTER_SHADOW_COLORS = {
+			Color.argb(40, 255, 254, 187), Color.argb(20, 255, 247, 219),
 			Color.argb(5, 255, 255, 255) };
 	public static final float[] OUTER_SHADOW_POS = { 0.90f, 0.95f, 0.99f };
 
-	public static final float[] RANGE_VALUES = { 16.0f, 25.0f, 40.0f, 100.0f };
-	public static final int[] RANGE_COLORS = { Color.rgb(231, 32, 43), Color.rgb(232, 111, 33), Color.rgb(232, 231, 33),
-			Color.rgb(27, 202, 33) };
+	public static final float[] RANGE_VALUES = { 16.0f, 25.0f, 40.0f, 200.0f };
+	public static final int[] RANGE_COLORS = { Color.WHITE, Color.WHITE,
+			Color.WHITE, Color.WHITE };
+	// public static final int[] RANGE_COLORS = { Color.rgb(27, 202, 33),
+	// Color.rgb(232, 231, 33), Color.rgb(232, 111, 33),
+	// Color.rgb(231, 32, 43) };
 
 	public static final int TEXT_SHADOW_COLOR = Color.argb(100, 0, 0, 0);
 	public static final int TEXT_VALUE_COLOR = Color.WHITE;
@@ -81,9 +86,11 @@ public class GaugeView extends View {
 	public static final float TEXT_VALUE_SIZE = 0.3f;
 	public static final float TEXT_UNIT_SIZE = 0.1f;
 
-	// *--------------------------------------------------------------------- *//
+	// *---------------------------------------------------------------------
+	// *//
 	// Customizable properties
-	// *--------------------------------------------------------------------- *//
+	// *---------------------------------------------------------------------
+	// *//
 
 	private boolean mShowOuterShadow;
 	private boolean mShowOuterBorder;
@@ -150,7 +157,8 @@ public class GaugeView extends View {
 	private Path mNeedleRightPath;
 	private Path mNeedleLeftPath;
 
-	// *--------------------------------------------------------------------- *//
+	// *---------------------------------------------------------------------
+	// *//
 
 	private float mScaleRotation;
 	private float mDivisionValue;
@@ -165,7 +173,8 @@ public class GaugeView extends View {
 	private long mNeedleLastMoved = -1;
 	private boolean mNeedleInitialized;
 
-	public GaugeView(final Context context, final AttributeSet attrs, final int defStyle) {
+	public GaugeView(final Context context, final AttributeSet attrs,
+			final int defStyle) {
 		super(context, attrs, defStyle);
 		readAttrs(context, attrs, defStyle);
 		init();
@@ -179,66 +188,105 @@ public class GaugeView extends View {
 		this(context, null, 0);
 	}
 
-	private void readAttrs(final Context context, final AttributeSet attrs, final int defStyle) {
-		final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.GaugeView, defStyle, 0);
-		mShowOuterShadow = a.getBoolean(R.styleable.GaugeView_showOuterShadow, SHOW_OUTER_SHADOW);
-		mShowOuterBorder = a.getBoolean(R.styleable.GaugeView_showOuterBorder, SHOW_OUTER_BORDER);
-		mShowOuterRim = a.getBoolean(R.styleable.GaugeView_showOuterRim, SHOW_OUTER_RIM);
-		mShowInnerRim = a.getBoolean(R.styleable.GaugeView_showInnerRim, SHOW_INNER_RIM);
-		mShowNeedle = a.getBoolean(R.styleable.GaugeView_showNeedle, SHOW_NEEDLE);
+	private void readAttrs(final Context context, final AttributeSet attrs,
+			final int defStyle) {
+		final TypedArray a = context.obtainStyledAttributes(attrs,
+				R.styleable.GaugeView, defStyle, 0);
+		mShowOuterShadow = a.getBoolean(R.styleable.GaugeView_showOuterShadow,
+				SHOW_OUTER_SHADOW);
+		mShowOuterBorder = a.getBoolean(R.styleable.GaugeView_showOuterBorder,
+				SHOW_OUTER_BORDER);
+		mShowOuterRim = a.getBoolean(R.styleable.GaugeView_showOuterRim,
+				SHOW_OUTER_RIM);
+		mShowInnerRim = a.getBoolean(R.styleable.GaugeView_showInnerRim,
+				SHOW_INNER_RIM);
+		mShowNeedle = a.getBoolean(R.styleable.GaugeView_showNeedle,
+				SHOW_NEEDLE);
 		mShowScale = a.getBoolean(R.styleable.GaugeView_showScale, SHOW_SCALE);
-		mShowRanges = a.getBoolean(R.styleable.GaugeView_showRanges, SHOW_RANGES);
+		mShowRanges = a.getBoolean(R.styleable.GaugeView_showRanges,
+				SHOW_RANGES);
 		mShowText = a.getBoolean(R.styleable.GaugeView_showText, SHOW_TEXT);
 
-		mOuterShadowWidth = mShowOuterShadow ? a.getFloat(R.styleable.GaugeView_outerShadowWidth, OUTER_SHADOW_WIDTH) : 0.0f;
-		mOuterBorderWidth = mShowOuterBorder ? a.getFloat(R.styleable.GaugeView_outerBorderWidth, OUTER_BORDER_WIDTH) : 0.0f;
-		mOuterRimWidth = mShowOuterRim ? a.getFloat(R.styleable.GaugeView_outerRimWidth, OUTER_RIM_WIDTH) : 0.0f;
-		mInnerRimWidth = mShowInnerRim ? a.getFloat(R.styleable.GaugeView_innerRimWidth, INNER_RIM_WIDTH) : 0.0f;
-		mInnerRimBorderWidth = mShowInnerRim ? a.getFloat(R.styleable.GaugeView_innerRimBorderWidth, INNER_RIM_BORDER_WIDTH) : 0.0f;
+		mOuterShadowWidth = mShowOuterShadow ? a.getFloat(
+				R.styleable.GaugeView_outerShadowWidth, OUTER_SHADOW_WIDTH)
+				: 0.0f;
+		mOuterBorderWidth = mShowOuterBorder ? a.getFloat(
+				R.styleable.GaugeView_outerBorderWidth, OUTER_BORDER_WIDTH)
+				: 0.0f;
+		mOuterRimWidth = mShowOuterRim ? a.getFloat(
+				R.styleable.GaugeView_outerRimWidth, OUTER_RIM_WIDTH) : 0.0f;
+		mInnerRimWidth = mShowInnerRim ? a.getFloat(
+				R.styleable.GaugeView_innerRimWidth, INNER_RIM_WIDTH) : 0.0f;
+		mInnerRimBorderWidth = mShowInnerRim ? a.getFloat(
+				R.styleable.GaugeView_innerRimBorderWidth,
+				INNER_RIM_BORDER_WIDTH) : 0.0f;
 
-		mNeedleWidth = a.getFloat(R.styleable.GaugeView_needleWidth, NEEDLE_WIDTH);
-		mNeedleHeight = a.getFloat(R.styleable.GaugeView_needleHeight, NEEDLE_HEIGHT);
+		mNeedleWidth = a.getFloat(R.styleable.GaugeView_needleWidth,
+				NEEDLE_WIDTH);
+		mNeedleHeight = a.getFloat(R.styleable.GaugeView_needleHeight,
+				NEEDLE_HEIGHT);
 
-		mScalePosition = (mShowScale || mShowRanges) ? a.getFloat(R.styleable.GaugeView_scalePosition, SCALE_POSITION) : 0.0f;
-		mScaleStartValue = a.getFloat(R.styleable.GaugeView_scaleStartValue, SCALE_START_VALUE);
-		mScaleEndValue = a.getFloat(R.styleable.GaugeView_scaleEndValue, SCALE_END_VALUE);
-		mScaleStartAngle = a.getFloat(R.styleable.GaugeView_scaleStartAngle, SCALE_START_ANGLE);
+		mScalePosition = (mShowScale || mShowRanges) ? a.getFloat(
+				R.styleable.GaugeView_scalePosition, SCALE_POSITION) : 0.0f;
+		mScaleStartValue = a.getFloat(R.styleable.GaugeView_scaleStartValue,
+				SCALE_START_VALUE);
+		mScaleEndValue = a.getFloat(R.styleable.GaugeView_scaleEndValue,
+				SCALE_END_VALUE);
+		mScaleStartAngle = a.getFloat(R.styleable.GaugeView_scaleStartAngle,
+				SCALE_START_ANGLE);
 
-		mDivisions = a.getInteger(R.styleable.GaugeView_divisions, SCALE_DIVISIONS);
-		mSubdivisions = a.getInteger(R.styleable.GaugeView_subdivisions, SCALE_SUBDIVISIONS);
+		mDivisions = a.getInteger(R.styleable.GaugeView_divisions,
+				SCALE_DIVISIONS);
+		mSubdivisions = a.getInteger(R.styleable.GaugeView_subdivisions,
+				SCALE_SUBDIVISIONS);
 
 		if (mShowRanges) {
-			mTextShadowColor = a.getColor(R.styleable.GaugeView_textShadowColor, TEXT_SHADOW_COLOR);
-			final int rangesId = a.getResourceId(R.styleable.GaugeView_rangeValues, 0);
-			final int colorsId = a.getResourceId(R.styleable.GaugeView_rangeColors, 0);
+			mTextShadowColor = a.getColor(
+					R.styleable.GaugeView_textShadowColor, TEXT_SHADOW_COLOR);
+			final int rangesId = a.getResourceId(
+					R.styleable.GaugeView_rangeValues, 0);
+			final int colorsId = a.getResourceId(
+					R.styleable.GaugeView_rangeColors, 0);
 			readRanges(context.getResources(), rangesId, colorsId);
 		}
 
 		if (mShowText) {
-			final int textValueId = a.getResourceId(R.styleable.GaugeView_textValue, 0);
-			final String textValue = a.getString(R.styleable.GaugeView_textValue);
-			mTextValue = (0 < textValueId) ? context.getString(textValueId) : (null != textValue) ? textValue : "";
+			final int textValueId = a.getResourceId(
+					R.styleable.GaugeView_textValue, 0);
+			final String textValue = a
+					.getString(R.styleable.GaugeView_textValue);
+			mTextValue = (0 < textValueId) ? context.getString(textValueId)
+					: (null != textValue) ? textValue : "";
 
-			final int textUnitId = a.getResourceId(R.styleable.GaugeView_textUnit, 0);
+			final int textUnitId = a.getResourceId(
+					R.styleable.GaugeView_textUnit, 0);
 			final String textUnit = a.getString(R.styleable.GaugeView_textUnit);
-			mTextUnit = (0 < textUnitId) ? context.getString(textUnitId) : (null != textUnit) ? textUnit : "";
-			mTextValueColor = a.getColor(R.styleable.GaugeView_textValueColor, TEXT_VALUE_COLOR);
-			mTextUnitColor = a.getColor(R.styleable.GaugeView_textUnitColor, TEXT_UNIT_COLOR);
-			mTextShadowColor = a.getColor(R.styleable.GaugeView_textShadowColor, TEXT_SHADOW_COLOR);
+			mTextUnit = (0 < textUnitId) ? context.getString(textUnitId)
+					: (null != textUnit) ? textUnit : "";
+			mTextValueColor = a.getColor(R.styleable.GaugeView_textValueColor,
+					TEXT_VALUE_COLOR);
+			mTextUnitColor = a.getColor(R.styleable.GaugeView_textUnitColor,
+					TEXT_UNIT_COLOR);
+			mTextShadowColor = a.getColor(
+					R.styleable.GaugeView_textShadowColor, TEXT_SHADOW_COLOR);
 
-			mTextValueSize = a.getFloat(R.styleable.GaugeView_textValueSize, TEXT_VALUE_SIZE);
-			mTextUnitSize = a.getFloat(R.styleable.GaugeView_textUnitSize, TEXT_UNIT_SIZE);
+			mTextValueSize = a.getFloat(R.styleable.GaugeView_textValueSize,
+					TEXT_VALUE_SIZE);
+			mTextUnitSize = a.getFloat(R.styleable.GaugeView_textUnitSize,
+					TEXT_UNIT_SIZE);
 		}
 
 		a.recycle();
 	}
 
-	private void readRanges(final Resources res, final int rangesId, final int colorsId) {
-		if (rangesId > 0 && colorsId > 0) {
+	private void readRanges(final Resources res, final int rangesId,
+			final int colorsId) {
+		if ((rangesId > 0) && (colorsId > 0)) {
 			final String[] ranges = res.getStringArray(R.array.ranges);
 			final String[] colors = res.getStringArray(R.array.rangeColors);
-			if (ranges.length != colors.length) { throw new IllegalArgumentException(
-					"The ranges and colors arrays must have the same length."); }
+			if (ranges.length != colors.length)
+				throw new IllegalArgumentException(
+						"The ranges and colors arrays must have the same length.");
 
 			final int length = ranges.length;
 			mRangeValues = new float[length];
@@ -247,8 +295,7 @@ public class GaugeView extends View {
 				mRangeValues[i] = Float.parseFloat(ranges[i]);
 				mRangeColors[i] = Color.parseColor(colors[i]);
 			}
-		}
-		else {
+		} else {
 			mRangeValues = RANGE_VALUES;
 			mRangeColors = RANGE_COLORS;
 		}
@@ -257,7 +304,8 @@ public class GaugeView extends View {
 	@TargetApi(11)
 	private void init() {
 		// TODO Why isn't this working with HA layer?
-		// The needle is not displayed although the onDraw() is being triggered by invalidate()
+		// The needle is not displayed although the onDraw() is being triggered
+		// by invalidate()
 		// calls.
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			setLayerType(View.LAYER_TYPE_SOFTWARE, null);
@@ -275,25 +323,36 @@ public class GaugeView extends View {
 	public void initDrawingRects() {
 		// The drawing area is a rectangle of width 1 and height 1,
 		// where (0,0) is the top left corner of the canvas.
-		// Note that on Canvas X axis points to right, while the Y axis points downwards.
+		// Note that on Canvas X axis points to right, while the Y axis points
+		// downwards.
 		mOuterShadowRect = new RectF(LEFT, TOP, RIGHT, BOTTOM);
 
-		mOuterBorderRect = new RectF(mOuterShadowRect.left + mOuterShadowWidth, mOuterShadowRect.top + mOuterShadowWidth,
-				mOuterShadowRect.right - mOuterShadowWidth, mOuterShadowRect.bottom - mOuterShadowWidth);
+		mOuterBorderRect = new RectF(mOuterShadowRect.left + mOuterShadowWidth,
+				mOuterShadowRect.top + mOuterShadowWidth,
+				mOuterShadowRect.right - mOuterShadowWidth,
+				mOuterShadowRect.bottom - mOuterShadowWidth);
 
-		mOuterRimRect = new RectF(mOuterBorderRect.left + mOuterBorderWidth, mOuterBorderRect.top + mOuterBorderWidth,
-				mOuterBorderRect.right - mOuterBorderWidth, mOuterBorderRect.bottom - mOuterBorderWidth);
+		mOuterRimRect = new RectF(mOuterBorderRect.left + mOuterBorderWidth,
+				mOuterBorderRect.top + mOuterBorderWidth,
+				mOuterBorderRect.right - mOuterBorderWidth,
+				mOuterBorderRect.bottom - mOuterBorderWidth);
 
-		mInnerRimRect = new RectF(mOuterRimRect.left + mOuterRimWidth, mOuterRimRect.top + mOuterRimWidth, mOuterRimRect.right
-				- mOuterRimWidth, mOuterRimRect.bottom - mOuterRimWidth);
+		mInnerRimRect = new RectF(mOuterRimRect.left + mOuterRimWidth,
+				mOuterRimRect.top + mOuterRimWidth, mOuterRimRect.right
+						- mOuterRimWidth, mOuterRimRect.bottom - mOuterRimWidth);
 
-		mInnerRimBorderRect = new RectF(mInnerRimRect.left + mInnerRimBorderWidth, mInnerRimRect.top + mInnerRimBorderWidth,
-				mInnerRimRect.right - mInnerRimBorderWidth, mInnerRimRect.bottom - mInnerRimBorderWidth);
+		mInnerRimBorderRect = new RectF(mInnerRimRect.left
+				+ mInnerRimBorderWidth, mInnerRimRect.top
+				+ mInnerRimBorderWidth, mInnerRimRect.right
+				- mInnerRimBorderWidth, mInnerRimRect.bottom
+				- mInnerRimBorderWidth);
 
-		mFaceRect = new RectF(mInnerRimRect.left + mInnerRimWidth, mInnerRimRect.top + mInnerRimWidth,
-				mInnerRimRect.right - mInnerRimWidth, mInnerRimRect.bottom - mInnerRimWidth);
+		mFaceRect = new RectF(mInnerRimRect.left + mInnerRimWidth,
+				mInnerRimRect.top + mInnerRimWidth, mInnerRimRect.right
+						- mInnerRimWidth, mInnerRimRect.bottom - mInnerRimWidth);
 
-		mScaleRect = new RectF(mFaceRect.left + mScalePosition, mFaceRect.top + mScalePosition, mFaceRect.right - mScalePosition,
+		mScaleRect = new RectF(mFaceRect.left + mScalePosition, mFaceRect.top
+				+ mScalePosition, mFaceRect.right - mScalePosition,
 				mFaceRect.bottom - mScalePosition);
 	}
 
@@ -338,7 +397,8 @@ public class GaugeView extends View {
 	public Paint getDefaultOuterShadowPaint() {
 		final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		paint.setStyle(Paint.Style.FILL);
-		paint.setShader(new RadialGradient(CENTER, CENTER, mOuterShadowRect.width() / 2.0f, OUTER_SHADOW_COLORS, OUTER_SHADOW_POS,
+		paint.setShader(new RadialGradient(CENTER, CENTER, mOuterShadowRect
+				.width() / 2.0f, OUTER_SHADOW_COLORS, OUTER_SHADOW_POS,
 				TileMode.MIRROR));
 		return paint;
 	}
@@ -352,28 +412,38 @@ public class GaugeView extends View {
 
 	public Paint getDefaultOuterRimPaint() {
 		// Use a linear gradient to create the 3D effect
-		final LinearGradient verticalGradient = new LinearGradient(mOuterRimRect.left, mOuterRimRect.top, mOuterRimRect.left,
-				mOuterRimRect.bottom, Color.rgb(255, 255, 255), Color.rgb(84, 90, 100), TileMode.REPEAT);
+		final LinearGradient verticalGradient = new LinearGradient(
+				mOuterRimRect.left, mOuterRimRect.top, mOuterRimRect.left,
+				mOuterRimRect.bottom, Color.rgb(255, 255, 255), Color.rgb(84,
+						90, 100), TileMode.REPEAT);
 
 		// Use a Bitmap shader for the metallic style
-		final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.light_alu);
-		final BitmapShader aluminiumTile = new BitmapShader(bitmap, TileMode.REPEAT, TileMode.REPEAT);
+		final Bitmap bitmap = BitmapFactory.decodeResource(getResources(),
+				R.drawable.light_alu);
+		final BitmapShader aluminiumTile = new BitmapShader(bitmap,
+				TileMode.REPEAT, TileMode.REPEAT);
 		final Matrix matrix = new Matrix();
 		matrix.setScale(1.0f / bitmap.getWidth(), 1.0f / bitmap.getHeight());
 		aluminiumTile.setLocalMatrix(matrix);
 
 		final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		paint.setShader(new ComposeShader(verticalGradient, aluminiumTile, PorterDuff.Mode.MULTIPLY));
+		paint.setShader(new ComposeShader(verticalGradient, aluminiumTile,
+				PorterDuff.Mode.MULTIPLY));
 		paint.setFilterBitmap(true);
 		return paint;
 	}
 
 	private Paint getDefaultInnerRimPaint() {
 		final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		paint.setShader(new LinearGradient(mInnerRimRect.left, mInnerRimRect.top, mInnerRimRect.left, mInnerRimRect.bottom, new int[] {
-				Color.argb(255, 68, 73, 80), Color.argb(255, 91, 97, 105), Color.argb(255, 178, 180, 183), Color.argb(255, 188, 188, 190),
-				Color.argb(255, 84, 90, 100), Color.argb(255, 137, 137, 137) }, new float[] { 0, 0.1f, 0.2f, 0.4f, 0.8f, 1 },
-				TileMode.CLAMP));
+		paint.setShader(new LinearGradient(mInnerRimRect.left,
+				mInnerRimRect.top, mInnerRimRect.left, mInnerRimRect.bottom,
+				new int[] { Color.argb(255, 68, 73, 80),
+						Color.argb(255, 91, 97, 105),
+						Color.argb(255, 178, 180, 183),
+						Color.argb(255, 188, 188, 190),
+						Color.argb(255, 84, 90, 100),
+						Color.argb(255, 137, 137, 137) }, new float[] { 0,
+						0.1f, 0.2f, 0.4f, 0.8f, 1 }, TileMode.CLAMP));
 		return paint;
 	}
 
@@ -395,8 +465,10 @@ public class GaugeView extends View {
 
 	public Paint getDefaultFacePaint() {
 		final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		paint.setShader(new RadialGradient(0.5f, 0.5f, mFaceRect.width() / 2, new int[] { Color.rgb(50, 132, 206), Color.rgb(36, 89, 162),
-				Color.rgb(27, 59, 131) }, new float[] { 0.5f, 0.96f, 0.99f }, TileMode.MIRROR));
+		paint.setShader(new RadialGradient(0.5f, 0.5f, mFaceRect.width() / 2,
+				new int[] { Color.rgb(50, 132, 206), Color.rgb(36, 89, 162),
+						Color.rgb(27, 59, 131) }, new float[] { 0.5f, 0.96f,
+						0.99f }, TileMode.MIRROR));
 		return paint;
 	}
 
@@ -410,9 +482,12 @@ public class GaugeView extends View {
 
 	public Paint getDefaultFaceShadowPaint() {
 		final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		paint.setShader(new RadialGradient(0.5f, 0.5f, mFaceRect.width() / 2.0f, new int[] { Color.argb(60, 40, 96, 170),
-				Color.argb(80, 15, 34, 98), Color.argb(120, 0, 0, 0), Color.argb(140, 0, 0, 0) },
-				new float[] { 0.60f, 0.85f, 0.96f, 0.99f }, TileMode.MIRROR));
+		paint.setShader(new RadialGradient(0.5f, 0.5f,
+				mFaceRect.width() / 2.0f, new int[] {
+						Color.argb(60, 40, 96, 170),
+						Color.argb(80, 15, 34, 98), Color.argb(120, 0, 0, 0),
+						Color.argb(140, 0, 0, 0) }, new float[] { 0.60f, 0.85f,
+						0.96f, 0.99f }, TileMode.MIRROR));
 		return paint;
 	}
 
@@ -448,7 +523,8 @@ public class GaugeView extends View {
 
 	public Paint getDefaultNeedleScrewPaint() {
 		final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		paint.setShader(new RadialGradient(0.5f, 0.5f, 0.07f, new int[] { Color.rgb(171, 171, 171), Color.WHITE }, new float[] { 0.05f,
+		paint.setShader(new RadialGradient(0.5f, 0.5f, 0.07f, new int[] {
+				Color.rgb(171, 171, 171), Color.WHITE }, new float[] { 0.05f,
 				0.9f }, TileMode.MIRROR));
 		return paint;
 	}
@@ -463,26 +539,31 @@ public class GaugeView extends View {
 
 	public void setDefaultRanges() {
 		mRangeValues = new float[] { 16, 25, 40, 100 };
-		mRangeColors = new int[] { Color.rgb(231, 32, 43), Color.rgb(232, 111, 33), Color.rgb(232, 231, 33), Color.rgb(27, 202, 33) };
+		mRangeColors = new int[] { Color.rgb(231, 32, 43),
+				Color.rgb(232, 111, 33), Color.rgb(232, 231, 33),
+				Color.rgb(27, 202, 33) };
 	}
 
 	public void setDefaultScaleRangePaints() {
 		final int length = mRangeValues.length;
 		mRangePaints = new Paint[length];
 		for (int i = 0; i < length; i++) {
-			mRangePaints[i] = new Paint(Paint.LINEAR_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
+			mRangePaints[i] = new Paint(Paint.LINEAR_TEXT_FLAG
+					| Paint.ANTI_ALIAS_FLAG);
 			mRangePaints[i].setColor(mRangeColors[i]);
 			mRangePaints[i].setStyle(Paint.Style.STROKE);
 			mRangePaints[i].setStrokeWidth(0.005f);
 			mRangePaints[i].setTextSize(0.05f);
 			mRangePaints[i].setTypeface(Typeface.SANS_SERIF);
 			mRangePaints[i].setTextAlign(Align.CENTER);
-			mRangePaints[i].setShadowLayer(0.005f, 0.002f, 0.002f, mTextShadowColor);
+			mRangePaints[i].setShadowLayer(0.005f, 0.002f, 0.002f,
+					mTextShadowColor);
 		}
 	}
 
 	public Paint getDefaultTextValuePaint() {
-		final Paint paint = new Paint(Paint.LINEAR_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
+		final Paint paint = new Paint(Paint.LINEAR_TEXT_FLAG
+				| Paint.ANTI_ALIAS_FLAG);
 		paint.setColor(mTextValueColor);
 		paint.setStyle(Paint.Style.FILL_AND_STROKE);
 		paint.setStrokeWidth(0.005f);
@@ -494,7 +575,8 @@ public class GaugeView extends View {
 	}
 
 	public Paint getDefaultTextUnitPaint() {
-		final Paint paint = new Paint(Paint.LINEAR_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
+		final Paint paint = new Paint(Paint.LINEAR_TEXT_FLAG
+				| Paint.ANTI_ALIAS_FLAG);
 		paint.setColor(mTextUnitColor);
 		paint.setStyle(Paint.Style.FILL_AND_STROKE);
 		paint.setStrokeWidth(0.005f);
@@ -522,7 +604,8 @@ public class GaugeView extends View {
 		mScaleRotation = (mScaleStartAngle + 180) % 360;
 		mDivisionValue = (mScaleEndValue - mScaleStartValue) / mDivisions;
 		mSubdivisionValue = mDivisionValue / mSubdivisions;
-		mSubdivisionAngle = (360 - 2 * mScaleStartAngle) / (mDivisions * mSubdivisions);
+		mSubdivisionAngle = (360 - (2 * mScaleStartAngle))
+				/ (mDivisions * mSubdivisions);
 	}
 
 	@Override
@@ -541,7 +624,8 @@ public class GaugeView extends View {
 	}
 
 	@Override
-	protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
+	protected void onMeasure(final int widthMeasureSpec,
+			final int heightMeasureSpec) {
 		// Loggable.log.debug(String.format("widthMeasureSpec=%s, heightMeasureSpec=%s",
 		// View.MeasureSpec.toString(widthMeasureSpec),
 		// View.MeasureSpec.toString(heightMeasureSpec)));
@@ -572,7 +656,8 @@ public class GaugeView extends View {
 	}
 
 	@Override
-	protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
+	protected void onSizeChanged(final int w, final int h, final int oldw,
+			final int oldh) {
 		drawGauge();
 	}
 
@@ -582,12 +667,14 @@ public class GaugeView extends View {
 			mBackground.recycle();
 		}
 		// Create a new background according to the new width and height
-		mBackground = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+		mBackground = Bitmap.createBitmap(getWidth(), getHeight(),
+				Bitmap.Config.ARGB_8888);
 		final Canvas canvas = new Canvas(mBackground);
 		final float scale = Math.min(getWidth(), getHeight());
 		canvas.scale(scale, scale);
-		canvas.translate((scale == getHeight()) ? ((getWidth()-scale) /2)/scale : 0 
-				,(scale == getWidth()) ? ((getHeight()-scale) /2 )/scale: 0);
+		canvas.translate((scale == getHeight()) ? ((getWidth() - scale) / 2)
+				/ scale : 0,
+				(scale == getWidth()) ? ((getHeight() - scale) / 2) / scale : 0);
 
 		drawRim(canvas);
 		drawFace(canvas);
@@ -603,9 +690,10 @@ public class GaugeView extends View {
 
 		final float scale = Math.min(getWidth(), getHeight());
 		canvas.scale(scale, scale);
-		canvas.translate((scale == getHeight()) ? ((getWidth()-scale) /2)/scale : 0 
-				,(scale == getWidth()) ? ((getHeight()-scale) /2 )/scale: 0);
-		
+		canvas.translate((scale == getHeight()) ? ((getWidth() - scale) / 2)
+				/ scale : 0,
+				(scale == getWidth()) ? ((getHeight() - scale) / 2) / scale : 0);
+
 		if (mShowNeedle) {
 			drawNeedle(canvas);
 		}
@@ -620,11 +708,11 @@ public class GaugeView extends View {
 	private void drawBackground(final Canvas canvas) {
 		if (null == mBackground) {
 			Logger.log.error("Background not created.");
-		}
-		else {
+		} else {
 			canvas.drawBitmap(mBackground, 0, 0, mBackgroundPaint);
 		}
 	}
+
 	private void drawRim(final Canvas canvas) {
 		if (mShowOuterShadow) {
 			canvas.drawOval(mOuterShadowRect, mOuterShadowPaint);
@@ -652,27 +740,31 @@ public class GaugeView extends View {
 	}
 
 	private void drawText(final Canvas canvas) {
-		final String textValue = !TextUtils.isEmpty(mTextValue) ? mTextValue : valueString(mCurrentValue);
+		final String textValue = !TextUtils.isEmpty(mTextValue) ? mTextValue
+				: valueString(mCurrentValue);
 		final float textValueWidth = mTextValuePaint.measureText(textValue);
-		final float textUnitWidth = !TextUtils.isEmpty(mTextUnit) ? mTextUnitPaint.measureText(mTextUnit) : 0;
+		final float textUnitWidth = !TextUtils.isEmpty(mTextUnit) ? mTextUnitPaint
+				.measureText(mTextUnit) : 0;
 
-		final float startX = CENTER - textUnitWidth / 2;
+		final float startX = CENTER - (textUnitWidth / 2);
 		final float startY = CENTER + 0.1f;
 
 		canvas.drawText(textValue, startX, startY, mTextValuePaint);
 
 		if (!TextUtils.isEmpty(mTextUnit)) {
-			canvas.drawText(mTextUnit, CENTER + textValueWidth / 2 + 0.03f, CENTER, mTextUnitPaint);
+			canvas.drawText(mTextUnit, CENTER + (textValueWidth / 2) + 0.03f,
+					CENTER, mTextUnitPaint);
 		}
 	}
 
 	private void drawScale(final Canvas canvas) {
 		canvas.save(Canvas.MATRIX_SAVE_FLAG);
 		// On canvas, North is 0 degrees, East is 90 degrees, South is 180 etc.
-		// We start the scale somewhere South-West so we need to first rotate the canvas.
+		// We start the scale somewhere South-West so we need to first rotate
+		// the canvas.
 		canvas.rotate(mScaleRotation, 0.5f, 0.5f);
 
-		final int totalTicks = mDivisions * mSubdivisions + 1;
+		final int totalTicks = (mDivisions * mSubdivisions) + 1;
 		for (int i = 0; i < totalTicks; i++) {
 			final float y1 = mScaleRect.top;
 			final float y2 = y1 + 0.015f; // height of division
@@ -680,13 +772,12 @@ public class GaugeView extends View {
 
 			final float value = getValueForTick(i);
 			final Paint paint = getRangePaint(value);
-			if (0 == value % mDivisions) {
+			if (0 == (value % mDivisions)) {
 				// Draw a division tick
 				canvas.drawLine(0.5f, y1, 0.5f, y3, paint);
 				// Draw the text 0.15 away from the division tick
 				canvas.drawText(valueString(value), 0.5f, y3 + 0.045f, paint);
-			}
-			else {
+			} else {
 				// Draw a subdivision tick
 				canvas.drawLine(0.5f, y1, 0.5f, y2, paint);
 			}
@@ -695,8 +786,11 @@ public class GaugeView extends View {
 		canvas.restore();
 	}
 
+	@SuppressLint("DefaultLocale")
 	private String valueString(final float value) {
-		return String.format("%d", (int) value);
+		if ((int) value == value) // integer
+			return String.format("%d", (int) value);
+		return String.format("%.1f", value);
 	}
 
 	private float getValueForTick(final int tick) {
@@ -705,17 +799,20 @@ public class GaugeView extends View {
 
 	private Paint getRangePaint(final float value) {
 		final int length = mRangeValues.length;
-		for (int i = 0; i < length - 1; i++) {
-			if (value < mRangeValues[i]) return mRangePaints[i];
+		for (int i = 0; i < (length - 1); i++) {
+			if (value < mRangeValues[i])
+				return mRangePaints[i];
 		}
-		if (value <= mRangeValues[length - 1]) return mRangePaints[length - 1];
+		if (value <= mRangeValues[length - 1])
+			return mRangePaints[length - 1];
 		throw new IllegalArgumentException("Value " + value + " out of range!");
 	}
 
 	private void drawNeedle(final Canvas canvas) {
 		if (mNeedleInitialized) {
 			final float angle = getAngleForValue(mCurrentValue);
-			// Logger.log.info(String.format("value=%f -> angle=%f", mCurrentValue, angle));
+			// Logger.log.info(String.format("value=%f -> angle=%f",
+			// mCurrentValue, angle));
 
 			canvas.save(Canvas.MATRIX_SAVE_FLAG);
 			canvas.rotate(angle, 0.5f, 0.5f);
@@ -733,35 +830,37 @@ public class GaugeView extends View {
 	}
 
 	private void setNeedleShadowPosition(final float angle) {
-		if (angle > 180 && angle < 360) {
+		if ((angle > 180) && (angle < 360)) {
 			// Move shadow from right to left
 			mNeedleRightPaint.setShadowLayer(0, 0, 0, Color.BLACK);
-			mNeedleLeftPaint.setShadowLayer(0.01f, -0.005f, 0.005f, Color.argb(127, 0, 0, 0));
-		}
-		else {
+			mNeedleLeftPaint.setShadowLayer(0.01f, -0.005f, 0.005f,
+					Color.argb(127, 0, 0, 0));
+		} else {
 			// Move shadow from left to right
 			mNeedleLeftPaint.setShadowLayer(0, 0, 0, Color.BLACK);
-			mNeedleRightPaint.setShadowLayer(0.01f, 0.005f, -0.005f, Color.argb(127, 0, 0, 0));
+			mNeedleRightPaint.setShadowLayer(0.01f, 0.005f, -0.005f,
+					Color.argb(127, 0, 0, 0));
 		}
 	}
 
 	private float getAngleForValue(final float value) {
-		return (mScaleRotation + (value / mSubdivisionValue) * mSubdivisionAngle) % 360;
+		return (mScaleRotation + ((value / mSubdivisionValue) * mSubdivisionAngle)) % 360;
 	}
 
 	private void computeCurrentValue() {
-		// Logger.log.warn(String.format("velocity=%f, acceleration=%f", mNeedleVelocity,
+		// Logger.log.warn(String.format("velocity=%f, acceleration=%f",
+		// mNeedleVelocity,
 		// mNeedleAcceleration));
 
-		if (!(Math.abs(mCurrentValue - mTargetValue) > 0.01f)) { return; }
+		if (!(Math.abs(mCurrentValue - mTargetValue) > 0.01f))
+			return;
 
 		if (-1 != mNeedleLastMoved) {
 			final float time = (System.currentTimeMillis() - mNeedleLastMoved) / 1000.0f;
 			final float direction = Math.signum(mNeedleVelocity);
 			if (Math.abs(mNeedleVelocity) < 90.0f) {
 				mNeedleAcceleration = 5.0f * (mTargetValue - mCurrentValue);
-			}
-			else {
+			} else {
 				mNeedleAcceleration = 0.0f;
 			}
 
@@ -769,20 +868,18 @@ public class GaugeView extends View {
 			mCurrentValue += mNeedleVelocity * time;
 			mNeedleVelocity += mNeedleAcceleration * time;
 
-			if ((mTargetValue - mCurrentValue) * direction < 0.01f * direction) {
+			if (((mTargetValue - mCurrentValue) * direction) < (0.01f * direction)) {
 				mCurrentValue = mTargetValue;
 				mNeedleVelocity = 0.0f;
 				mNeedleAcceleration = 0.0f;
 				mNeedleLastMoved = -1L;
-			}
-			else {
+			} else {
 				mNeedleLastMoved = System.currentTimeMillis();
 			}
 
 			invalidate();
 
-		}
-		else {
+		} else {
 			mNeedleLastMoved = System.currentTimeMillis();
 			computeCurrentValue();
 		}
@@ -792,15 +889,12 @@ public class GaugeView extends View {
 		if (mShowScale || mShowRanges) {
 			if (value < mScaleStartValue) {
 				mTargetValue = mScaleStartValue;
-			}
-			else if (value > mScaleEndValue) {
+			} else if (value > mScaleEndValue) {
 				mTargetValue = mScaleEndValue;
-			}
-			else {
+			} else {
 				mTargetValue = value;
 			}
-		}
-		else {
+		} else {
 			mTargetValue = value;
 		}
 		mNeedleInitialized = true;
@@ -808,5 +902,3 @@ public class GaugeView extends View {
 	}
 
 }
-
-	
